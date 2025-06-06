@@ -1,0 +1,133 @@
+services:
+  postgres:
+    container_name: ms_pg_sql
+    image: postgres
+    environment:
+      POSTGRES_USER: victor
+      POSTGRES_PASSWORD: victor
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - cloud-native-ecommerce-net
+    restart: unless-stopped
+  pgadmin:
+    container_name: ms_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - 5050:80
+    networks:
+      - cloud-native-ecommerce-net
+    restart: unless-stopped
+
+  mongodb:
+    container_name: ms_mongo_db
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=victor
+      - MONGO_INITDB_ROOT_PASSWORD=victor
+    networks:
+      - cloud-native-ecommerce-net
+
+  mongo-express:
+    image: mongo-express
+    container_name: ms_mongo_express
+    restart: unless-stopped
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=victor
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=victor
+      - ME_CONFIG_MONGODB_URL=mongodb://victor:victor@ms_mongo_db:27017/
+      - ME_CONFIG_BASICAUTH=false
+      - ME_CONFIG_MONGODB_SERVER=ms_mongo_db
+      - ME_CONFIG_MONGODB_PORT=27017
+    depends_on:
+      - mongodb
+    networks:
+      - cloud-native-ecommerce-net
+
+  mysql:
+    container_name: ms_mysql
+    image: mysql:8
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: victor
+      MYSQL_DATABASE: microservices_db
+      MYSQL_USER: victor
+      MYSQL_PASSWORD: victor
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - cloud-native-ecommerce-net
+
+  phpmyadmin:
+    container_name: ms_phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: ms_mysql
+      PMA_USER: victor
+      PMA_PASSWORD: victor
+      MYSQL_ROOT_PASSWORD: victor
+    ports:
+      - 8082:80
+    depends_on:
+      - mysql
+    networks:
+      - cloud-native-ecommerce-net
+  redis:
+    container_name: ms_redis
+    image: redis:7
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    networks:
+      - cloud-native-ecommerce-net
+    volumes:
+      - redis:/data
+  mail-dev:
+    container_name: ms_mail_dev
+    image: maildev/maildev
+    ports:
+      - 1080:1080
+      - 1025:1025
+  redis-insight:
+    container_name: ms_redis_insight
+    image: redis/redisinsight:latest
+    restart: unless-stopped
+    ports:
+      - "5540:5540"
+    environment:
+      - REDIS_OM_URL=redis://ms_redis:6379
+    networks:
+      - cloud-native-ecommerce-net
+    depends_on:
+      - redis
+
+
+networks:
+  cloud-native-ecommerce-net:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
+  mongo:
+  mysql:
+  redis:
