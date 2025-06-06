@@ -7,5 +7,11 @@ spring:
 #      username: victor
 #      password: victor
       authentication-database: admin
+    redis:
+      host: localhost
+      port: 6379
+
 server:
   port: 8010
+
+

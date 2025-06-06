@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface CustomerService {
   public CustomerResponse createCustomer(CreateCustomerRequest customer);
-  public List<CustomerResponse> findAllCustomers();
+  public List<CustomerResponse> findAllCustomers(String search, int skip, int limit);
   public CustomerResponse findCustomerById(String id);
   public CustomerResponse findCustomerByEmail(String email);
   public CustomerResponse updateCustomer(String id,UpdateCustomerRequest updateCustomerRequest);

@@ -11,7 +11,7 @@ services:
     ports:
       - 5432:5432
     networks:
-      - cloud-native-ecommerce-net
+      - cloud-native-ecomerce-net
     restart: unless-stopped
   pgadmin:
     container_name: ms_pgadmin
@@ -25,7 +25,7 @@ services:
     ports:
       - 5050:80
     networks:
-      - cloud-native-ecommerce-net
+      - cloud-native-ecomerce-net
     restart: unless-stopped
 
   mongodb:
@@ -42,7 +42,7 @@ services:
 #      - MONGO_INITDB_DATABASE=customer_service
 #    command: mongod --auth
     networks:
-      - cloud-native-ecommerce-net
+      - cloud-native-ecomerce-net
 
   mongo-express:
     image: mongo-express
@@ -60,7 +60,7 @@ services:
     depends_on:
       - mongodb
     networks:
-      - cloud-native-ecommerce-net
+      - cloud-native-ecomerce-net
 
   mysql:
     container_name: ms_mysql
@@ -76,7 +76,7 @@ services:
     volumes:
       - mysql:/var/lib/mysql
     networks:
-      - cloud-native-ecommerce-net
+      - cloud-native-ecomerce-net
 
   phpmyadmin:
     container_name: ms_phpmyadmin
@@ -92,15 +92,15 @@ services:
     depends_on:
       - mysql
     networks:
-      - cloud-native-ecommerce-net
+      - cloud-native-ecomerce-net
   redis:
     container_name: ms_redis
     image: redis:7
     restart: unless-stopped
     ports:
-      - 6379:6379
+      - "6379:6379"
     networks:
-      - cloud-native-ecommerce-net
+      - cloud-native-ecomerce-net
     volumes:
       - redis:/data
   mail-dev:
@@ -118,13 +118,13 @@ services:
     environment:
       - REDIS_OM_URL=redis://ms_redis:6379
     networks:
-      - cloud-native-ecommerce-net
+      - cloud-native-ecomerce-net
     depends_on:
       - redis
 
 
 networks:
-  cloud-native-ecommerce-net:
+  cloud-native-ecomerce-net:
     driver: bridge
 
 volumes:

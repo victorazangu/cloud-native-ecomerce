@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -22,15 +23,24 @@ public class CustomerController {
     @Autowired
     private final CustomerServiceImpl customerService;
 
+    @GetMapping("/testDate")
+    public ResponseEntity<LocalDateTime> testDate() {
+        return ResponseEntity.ok(LocalDateTime.now());
+    }
     @PostMapping
     public ResponseEntity<CustomerResponse> createCustomer(@RequestBody @Valid CreateCustomerRequest customer) {
         return ResponseEntity.status(HttpStatus.CREATED).body(customerService.createCustomer(customer));
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
-        return ResponseEntity.ok(customerService.findAllCustomers());
+    public ResponseEntity<List<CustomerResponse>> getAllCustomers(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false, defaultValue = "0") int skip,
+            @RequestParam(required = false, defaultValue = "10") int limit
+    ) {
+        return ResponseEntity.ok(customerService.findAllCustomers(search, skip, limit));
     }
+
 
     @GetMapping("{id}")
     public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable("id") String id) {
